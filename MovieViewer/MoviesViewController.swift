@@ -19,7 +19,6 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        errorView.isHidden = true
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -30,6 +29,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
         // Display HUD right before the request is made
         MBProgressHUD.showAdded(to: self.view, animated: true)
+//        errorView.isHidden = true
         let task: URLSessionDataTask = session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) in
             // Hide HUD once the network request comes back (must be done on main UI thread)
             MBProgressHUD.hide(for: self.view, animated: true)
@@ -42,7 +42,14 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                     self.tableView.reloadData()
                 }
             } else {
-                self.errorView.isHidden = false
+//                self.errorView.isHidden = false
+                UIView.animate(withDuration: 1.0, animations: {
+                    self.errorView.center.y += self.view.bounds.width
+                }, completion: { finished in
+                    UIView.animate(withDuration: 1.0, delay: 1.5, animations: {
+                        self.errorView.center.y -= self.view.bounds.width
+                    })
+                })
             }
         }
         task.resume()
@@ -53,29 +60,39 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         refreshControl.endRefreshing()
         // add refresh control to table view
         tableView.insertSubview(refreshControl, at: 0)
-        
-        
-        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        errorView.isHidden = false
+        errorView.center.y -= view.bounds.width
     }
     
     func refreshControlAction(refreshControl: UIRefreshControl) {
-        errorView.isHidden = true
+        
         
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")!
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
         let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
+        
         let task: URLSessionDataTask = session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) in
             
             if let data = data {
                 if let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
                     print(dataDictionary)
-                    
+//                    self.errorView.isHidden = true
                     self.movies = dataDictionary["results"] as! [NSDictionary]
                     self.tableView.reloadData()
                 }
             } else {
-                self.errorView.isHidden = false
+//                self.errorView.isHidden = false
+                UIView.animate(withDuration: 1.0, animations: {
+                    self.errorView.center.y += self.view.bounds.width
+                }, completion: { finished in
+                    UIView.animate(withDuration: 1.0, delay: 1.5, animations: {
+                        self.errorView.center.y -= self.view.bounds.width
+                    })
+                })
             }
 
             refreshControl.endRefreshing()
