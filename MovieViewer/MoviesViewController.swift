@@ -13,10 +13,13 @@ import MBProgressHUD
 class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var errorView: UIView!
+    
     var movies: [NSDictionary]?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        errorView.isHidden = true
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -38,10 +41,11 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                     self.movies = dataDictionary["results"] as! [NSDictionary]
                     self.tableView.reloadData()
                 }
+            } else {
+                self.errorView.isHidden = false
             }
         }
         task.resume()
-        
         
         // Do any additional setup after loading the view.
         let refreshControl = UIRefreshControl()
@@ -55,6 +59,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func refreshControlAction(refreshControl: UIRefreshControl) {
+        errorView.isHidden = true
+        
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")!
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
@@ -68,7 +74,10 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                     self.movies = dataDictionary["results"] as! [NSDictionary]
                     self.tableView.reloadData()
                 }
+            } else {
+                self.errorView.isHidden = false
             }
+
             refreshControl.endRefreshing()
         }
         task.resume()
@@ -104,38 +113,6 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         return cell 
     }
     
-//    func refreshControlAction (refreshControl: UIRefreshControl) {
-//        let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
-//        let url = NSURL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")!
-//        let request = NSURLRequest(url: url as URL, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
-//        let session = URLSession(
-//            configuration: URLSessionConfiguration.default,
-//            delegate:nil,
-//            delegateQueue:OperationQueue.main
-//        )
-//        let task : URLSessionDataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) in
-//            
-//            if let data = data {
-//                if let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
-//                    print(dataDictionary)
-//                    
-//                    self.movies = dataDictionary["results"] as! [NSDictionary]
-//                    self.tableView.reloadData()
-//                }
-//            }
-//            
-//            // Reload the tableView now that there is new data
-////            self.tableView.reloadData()
-//            
-//            // Tell the refreshControl to stop spinning
-//            refreshControl.endRefreshing()
-//        
-//        
-//        });
-//        task.resume()
-//        
-//    }
-
     /*
     // MARK: - Navigation
 
