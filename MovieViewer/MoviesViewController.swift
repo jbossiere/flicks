@@ -130,10 +130,27 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         let baseImageURL = "https://image.tmdb.org/t/p/w500/"
         let posterPath = movie["poster_path"] as! String
         let imageURL = NSURL(string: baseImageURL + posterPath)
+        // Used for fading in image loaded from network
+        let imageRequest = NSURLRequest(url: imageURL as! URL)
         
         cell.titleLabel.text = title
         cell.overviewLabel.text = overview
-        cell.posterView.setImageWith(imageURL as! URL)
+        cell.posterView.setImageWith(imageRequest as URLRequest, placeholderImage: nil, success: { (imageRequest, imageResponse, image) in
+            // imageResponse will be nil if the image is cached
+            if imageResponse != nil {
+                cell.posterView.alpha = 0.0
+                cell.posterView.image = image
+                UIView.animate(withDuration: 0.5, animations: {
+                    cell.posterView.alpha = 1.0
+                })
+            } else {
+                // image was cached so just update the image
+                cell.posterView.image = image
+            }
+            
+        }) { (imageRequest, imageResponse, error) in
+            print("Uh oh")
+        }
         
         return cell 
     }
