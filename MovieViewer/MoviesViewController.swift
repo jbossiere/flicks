@@ -18,6 +18,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var errorView: UIView!
     
     var movies: [NSDictionary]?
+    var filteredData: [NSDictionary]?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +27,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.delegate = self
         searchBar.delegate = self
         
+        filteredData = movies
+        
         
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")!
@@ -33,7 +36,6 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
         // Display HUD right before the request is made
         MBProgressHUD.showAdded(to: self.view, animated: true)
-//        errorView.isHidden = true
         let task: URLSessionDataTask = session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) in
             // Hide HUD once the network request comes back (must be done on main UI thread)
             MBProgressHUD.hide(for: self.view, animated: true)
@@ -43,10 +45,10 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                     print(dataDictionary)
                     
                     self.movies = dataDictionary["results"] as! [NSDictionary]
+                    self.filteredData = self.movies
                     self.tableView.reloadData()
                 }
             } else {
-//                self.errorView.isHidden = false
                 UIView.animate(withDuration: 1.0, animations: {
                     self.errorView.center.y += self.view.bounds.width
                 }, completion: { finished in
@@ -84,12 +86,11 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             if let data = data {
                 if let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
                     print(dataDictionary)
-//                    self.errorView.isHidden = true
                     self.movies = dataDictionary["results"] as! [NSDictionary]
+                    self.filteredData = self.movies
                     self.tableView.reloadData()
                 }
             } else {
-//                self.errorView.isHidden = false
                 UIView.animate(withDuration: 1.0, animations: {
                     self.errorView.center.y += self.view.bounds.width
                 }, completion: { finished in
@@ -110,8 +111,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let movies = movies {
-            return movies.count
+        if let filteredData = filteredData {
+            return filteredData.count
         } else {
             return 0
         }
@@ -120,9 +121,10 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath) as! MovieCell
-        let movie = movies![indexPath.row]
+        let movie = filteredData![indexPath.row]
         let title = movie["title"] as! String
         let overview = movie["overview"] as! String
+        
         let baseImageURL = "https://image.tmdb.org/t/p/w500/"
         let posterPath = movie["poster_path"] as! String
         let imageURL = NSURL(string: baseImageURL + posterPath)
@@ -132,6 +134,13 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         cell.posterView.setImageWith(imageURL as! URL)
         
         return cell 
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        filteredData = searchText.isEmpty ? movies : movies?.filter({(movie: NSDictionary) -> Bool in
+            return (movie["title"] as! String).range(of: searchText, options: .caseInsensitive) != nil
+        })
+        tableView.reloadData()
     }
     
     /*
