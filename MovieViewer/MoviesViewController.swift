@@ -23,6 +23,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.view.bringSubview(toFront: searchBar)
+        
         tableView.dataSource = self
         tableView.delegate = self
         searchBar.delegate = self
