@@ -31,7 +31,7 @@
                                         <rect key="frame" x="0.0" y="72" width="375" height="168"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="8WA-yc-3Dl" id="5ic-nn-fBA">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="168"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="167"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Overview" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LyX-sR-JIW">
@@ -62,8 +62,8 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <view contentMode="scaleToFill" misplaced="YES" id="rg1-hn-Nzf">
-                                <rect key="frame" x="0.0" y="43" width="375" height="38"/>
+                            <view alpha="0.75" contentMode="scaleToFill" misplaced="YES" id="rg1-hn-Nzf">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="38"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Network Error" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="fdY-Lo-Hey">

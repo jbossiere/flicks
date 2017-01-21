@@ -23,7 +23,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.bringSubview(toFront: searchBar)
+//        self.view.bringSubview(toFront: searchBar)
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -71,7 +71,6 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        errorView.isHidden = false
         errorView.center.y -= view.bounds.width
     }
     
