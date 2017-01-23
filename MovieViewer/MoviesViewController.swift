@@ -23,8 +23,6 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        self.view.bringSubview(toFront: searchBar)
-        
         tableView.dataSource = self
         tableView.delegate = self
         searchBar.delegate = self
@@ -46,7 +44,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                 if let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
                     print(dataDictionary)
                     
-                    self.movies = dataDictionary["results"] as! [NSDictionary]
+                    self.movies = dataDictionary["results"] as? [NSDictionary]
                     self.filteredData = self.movies
                     self.tableView.reloadData()
                 }
@@ -87,7 +85,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             if let data = data {
                 if let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
                     print(dataDictionary)
-                    self.movies = dataDictionary["results"] as! [NSDictionary]
+                    self.movies = dataDictionary["results"] as? [NSDictionary]
                     self.filteredData = self.movies
                     self.tableView.reloadData()
                 }
@@ -125,33 +123,32 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         let movie = filteredData![indexPath.row]
         let title = movie["title"] as! String
         let overview = movie["overview"] as! String
-        
-        let baseImageURL = "https://image.tmdb.org/t/p/w500/"
-        let posterPath = movie["poster_path"] as! String
-        let imageURL = NSURL(string: baseImageURL + posterPath)
-        // Used for fading in image loaded from network
-        let imageRequest = NSURLRequest(url: imageURL as! URL)
-        
         cell.titleLabel.text = title
         cell.overviewLabel.text = overview
-        cell.posterView.setImageWith(imageRequest as URLRequest, placeholderImage: nil, success: { (imageRequest, imageResponse, image) in
-            // imageResponse will be nil if the image is cached
-            if imageResponse != nil {
-                cell.posterView.alpha = 0.0
-                cell.posterView.image = image
-                UIView.animate(withDuration: 0.5, animations: {
-                    cell.posterView.alpha = 1.0
-                })
-            } else {
-                // image was cached so just update the image
-                cell.posterView.image = image
-            }
-            
-        }) { (imageRequest, imageResponse, error) in
-            print("Uh oh")
-        }
         
-        return cell 
+        let baseImageURL = "https://image.tmdb.org/t/p/w500/"
+        if let posterPath = movie["poster_path"] as? String {
+            let imageURL = NSURL(string: baseImageURL + posterPath)
+            // For fading in image loaded from network
+            let imageRequest = NSURLRequest(url: imageURL as! URL)
+            cell.posterView.setImageWith(imageRequest as URLRequest, placeholderImage: nil, success: { (imageRequest, imageResponse, image) in
+                // imageResponse will be nil if the image is cached
+                if imageResponse != nil {
+                    cell.posterView.alpha = 0.0
+                    cell.posterView.image = image
+                    UIView.animate(withDuration: 0.5, animations: {
+                        cell.posterView.alpha = 1.0
+                    })
+                } else {
+                    // image was cached so just update the image
+                    cell.posterView.image = image
+                }
+            
+            }) { (imageRequest, imageResponse, error) in
+                print("Uh oh")
+            }
+        }
+        return cell
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -171,14 +168,22 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         searchBar.resignFirstResponder()
     }
     
-    /*
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+        
+        let cell = sender as! UITableViewCell
+        let indexPath = tableView.indexPath(for: cell)
+        let movie = movies![indexPath!.row]
+        
+        let detailViewController = segue.destination as! DetailViewController
+        detailViewController.movie = movie
+        
     }
-    */
+    
 
 }
