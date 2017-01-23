@@ -15,6 +15,7 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var overviewLabel: UILabel!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var infoView: UIView!
+    @IBOutlet weak var detailNavigationItem: UINavigationItem!
     
     var movie: NSDictionary!
     
@@ -25,6 +26,7 @@ class DetailViewController: UIViewController {
         
         let title = movie["title"] as? String
         titleLabel.text = title
+        detailNavigationItem.title = title
         let overview = movie["overview"] as? String
         overviewLabel.text = overview
         
@@ -35,8 +37,8 @@ class DetailViewController: UIViewController {
             let imageURL = NSURL(string: baseImageURL + posterPath)
             posterImageView.setImageWith(imageURL as! URL)
         }
-
-        // Do any additional setup after loading the view.
+        
+        
     }
 
     override func didReceiveMemoryWarning() {

@@ -128,6 +128,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         cell.titleLabel.text = title
         cell.overviewLabel.text = overview
         
+        cell.selectionStyle = .none
+        
         let baseImageURL = "https://image.tmdb.org/t/p/w500/"
         if let posterPath = movie["poster_path"] as? String {
             let imageURL = NSURL(string: baseImageURL + posterPath)
